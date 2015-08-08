@@ -3,3 +3,9 @@ extends =
 #     profiles/production.cfg
 #     profiles/devel.cfg
 
+#[configs]
+#port = 6543
+#substanced_secret =
+#substanced_initial_login =
+#substanced_initial_password =
+#mail_default_sender =
