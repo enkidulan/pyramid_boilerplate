@@ -36,5 +36,5 @@ deploy:
         name:  upading build
         code: |
             eval `ssh-agent -s`
-            ssh $dep_dest -A 'ssh-add && cd blog && git pull && bin/buildout'
+            ssh $dep_dest -A 'ssh-add && cd blog && git pull && bin/buildout -Nv'
             ssh $dep_dest -A 'cd blog && bin/circusctl restart'
