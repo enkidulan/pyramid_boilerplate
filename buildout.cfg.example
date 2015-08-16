@@ -1,7 +1,11 @@
 [buildout]
 extends =
 #     profiles/production.cfg
+#     profiles/staging.cfg
 #     profiles/devel.cfg
+
+find-links =
+
 
 #[configs]
 #port = 6543
