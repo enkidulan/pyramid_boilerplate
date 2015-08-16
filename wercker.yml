@@ -7,13 +7,14 @@ build:
        name: setup env configuration
        code: |
           cp buildout.cfg.example buildout.cfg
-          sed -ri 's/# +profiles\/devel.cfg/   profiles\/devel.cfg/g' buildout.cfg
-          sed -ri 's/#[configs]/[configs]/g' buildout.cfg
-          sed -ri 's/#port = 6543/port = 6543/g' buildout.cfg
-          sed -ri 's/#substanced_secret = /substanced_secret = admin/g' buildout.cfg
-          sed -ri 's/#substanced_initial_login =/substanced_initial_login = admin/g' buildout.cfg
-          sed -ri 's/#substanced_initial_password =/substanced_initial_password = admin/g' buildout.cfg
-          sed -ri 's/#mail_default_sender =/mail_default_sender = admin/g' buildout.cfg
+          sed -ri 's/# +profiles\/staging.cfg/   profiles\/staging.cfg/' buildout.cfg
+          sed -ri "s,find-links =,find-links = $dist_url," buildout.cfg
+          sed -ri 's/#\[configs\]/\[configs\]/' buildout.cfg
+          sed -ri 's/#port = 6543/port = 6543/' buildout.cfg
+          sed -ri 's/#substanced_secret =/substanced_secret = admin/' buildout.cfg
+          sed -ri 's/#substanced_initial_login =/substanced_initial_login = admin/' buildout.cfg
+          sed -ri 's/#substanced_initial_password =/substanced_initial_password = admin/' buildout.cfg
+          sed -ri 's/#mail_default_sender =/mail_default_sender = admin/' buildout.cfg
     - script:
        name: preparing build
        code: |
@@ -22,37 +23,18 @@ build:
         name: building env
         code: |
           bin/buildout
-#
-#deploy:
-#  enki_dist:
-#  - add-ssh-key:
-#     keyname: enkid_dist_ssh
-#     host: $hostname
-#  - add-to-known_hosts:
-#       hostname: $hostname
-#       # fingerprint: ce:83:e9:7d:02:a4:e3:63:3f:8a:07:cc:d5:d9:bb:cd
-#  # - script:
-#  #    name: installing dependensies
-#  #    code: |
-#  #      pip install jarn.mkrelease
-#  - script:
-#     name: set up for git
-#     code: |
-#       git config --global user.email "enkidulan@gmail.com"
-##       git config --global user.name "wercker builder"
-##       git config --global push.default simple
-#  - add-ssh-key:
-#     keyname: enkid_dist_ssh
-#     host: github.com
-#  - add-to-known_hosts:
-#       hostname: github.com
-#  - script:
-#     name: releasing to dist
-#     code: |
-#       TAGNAME=`date +"v1.0.%Y%m%d%H%M"`
-#       sed -ri s/version=\'v[\.0-9\-]+\'/version=\'$TAGNAME\'/g setup.py
-#       git add blog_frontend/bin setup.py
-#       git commit -m "Prepare version $TAGNAME [ci skip]"
-#       git push origin master
-#       mkrelease -C -d $enki_dist_url
-#       git push origin master --tags
+
+deploy:
+  blog:
+    - add-ssh-key:
+        keyname: enkid_blog_ssh
+        host: $hostname
+    - add-to-known_hosts:
+        hostname: $hostname
+
+    - script:
+        name:  upading build
+        code: |
+            eval `ssh-agent -s`
+            ssh $dep_dest -A 'ssh-add && cd blog && git pull && bin/buildout'
+            ssh $dep_dest -A 'cd blog && bin/circusctl restart'
