@@ -27,6 +27,7 @@ substanced.initial_login = ${configs:substanced_initial_login}
 substanced.initial_password = ${configs:substanced_initial_password}
 substanced.uploads_tempdir = ${work_dirs:tmp}
 substanced.catalogs.autosync = true
+substanced.autoevolve = true
 
 mail.default_sender = ${configs:mail_default_sender}
 
