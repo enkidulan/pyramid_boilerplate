@@ -44,7 +44,8 @@ buildout.cfg
 
 conf/
 tests_logs/
-src
+src/*
+!src/enkiblog
 
 
 # front-end app
@@ -54,3 +55,4 @@ logs/
 supervisord.conf
 
 node_modules/
+
