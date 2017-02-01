@@ -21,6 +21,7 @@ __pycache__
 
 # Installer logs
 pip-log.txt
+.cache
 
 # Unit test / coverage reports
 .coverage
@@ -44,7 +45,8 @@ buildout.cfg
 
 conf/
 tests_logs/
-src
+src/*
+!src/peblog
 
 
 # front-end app
