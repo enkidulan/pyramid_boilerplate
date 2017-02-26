@@ -1,5 +1,5 @@
 """App entry point and configuration."""
-
+from functools import partial
 import websauna.system
 
 
@@ -18,10 +18,12 @@ class Initializer(websauna.system.Initializer):
     def configure_templates(self):
         """Include our package templates folder in Jinja 2 configuration."""
         super(Initializer, self).configure_templates()
+        search_templates = partial(
+            self.config.add_jinja2_search_path, 'enkiblog:templates', prepend=True)
 
-        self.config.add_jinja2_search_path('enkiblog:templates', name='.html', prepend=True)  # HTML templates for pages
-        self.config.add_jinja2_search_path('enkiblog:templates', name='.txt', prepend=True)  # Plain text email templates (if any)
-        self.config.add_jinja2_search_path('enkiblog:templates', name='.xml', prepend=True)  # Sitemap and misc XML files (if any)
+        search_templates(name='.html')  # HTML templates for pages
+        search_templates(name='.txt')  # Plain text email templates (if any)
+        search_templates(name='.xml')  # Sitemap and misc XML files (if any)
 
     def configure_views(self):
         """Configure views for your application.
@@ -46,6 +48,33 @@ class Initializer(websauna.system.Initializer):
         # Scan our admins
         from . import admins
         self.config.scan(admins)
+        from . import adminviews
+        self.config.scan(adminviews)
+
+    # def configure_database(self):
+    #     """Configure database.
+
+    #     * Set up base model
+
+    #     * Set up mechanism to create database session for requests
+
+    #     * Set up transaction machinery
+
+    #     Calls py:func:`websauna.system.model.meta.includeme`.
+
+    #     """
+    #     # super().configure_database()
+
+    #     self.config.include("pyramid_tm")
+    #     self.config.include(".model.meta")
+    #     from pyramid.interfaces import IRequest
+    #     from websauna.system.model.interfaces import ISQLAlchemySessionFactory
+    #     from enkiblog.tests.fakefactory import create_test_dbsession
+
+    #     self.config.registry.registerAdapter(
+    #         factory=create_test_dbsession,
+    #         required=(IRequest,),
+    #         provided=ISQLAlchemySessionFactory)
 
     def run(self):
         super(Initializer, self).run()

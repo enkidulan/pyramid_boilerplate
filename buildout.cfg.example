@@ -1,14 +1,5 @@
 [buildout]
 extends =
 #     profiles/production.cfg
-#     profiles/staging.cfg
-#     profiles/devel.cfg
-
-find-links =
-
-#[configs]
-#port = 6543
-#substanced_secret =
-#substanced_initial_login =
-#substanced_initial_password =
-#mail_default_sender =
+#     profiles/testing.cfg
+#     profiles/development.cfg

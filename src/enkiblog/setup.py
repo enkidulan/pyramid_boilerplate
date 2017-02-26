@@ -1,5 +1,4 @@
 import os
-import sys
 from setuptools import setup, find_packages
 
 
@@ -10,24 +9,17 @@ with open(os.path.join(here, 'CHANGES.rst')) as f:
     CHANGES = f.read()
 
 
-# trying to run python setup.py install or python setup.py develop
-if len(sys.argv) >= 2:
-    if sys.argv[0] == "setup.py" and sys.argv[1] in ("install", "develop"):
-        # Otherwise so much stuff would be broken later...
-        # Namely, namespaced packages clash as pip, setup.py and easy_install handle namespaces differently
-        raise RuntimeError("It is not possible to install this package with setup.py. Use pip to install this package as instructed in Websauna tutorial.")
-
-
 setup(name='enkiblog',
       version='0.0',
       description='enkiblog',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
-        "Programming Language :: Python",
-        "Framework :: Pyramid",
-        "Topic :: Internet :: WWW/HTTP",
-        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
-        ],
+          "Programming Language :: Python",
+          "Framework :: Pyramid",
+          "Topic :: Internet :: WWW/HTTP",
+          "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+
+      ],
       author='',
       author_email='',
       url='',
@@ -36,23 +28,20 @@ setup(name='enkiblog',
       include_package_data=True,
       zip_safe=False,
       test_suite='enkiblog',
-      install_requires=['websauna'],
+      install_requires=[
+          'websauna',
+          'python-slugify',
+      ],
       extras_require={
-        # Dependencies for running test suite
-        'test': [
-            "pytest",
-            "pytest-runner",
-            "pytest-splinter",
-            "webtest",
-
-            # Wait until Marionette matures
-            # http://stackoverflow.com/questions/37761668/cant-open-browser-with-selenium-after-firefox-update
-            "selenium==2.53.6",
-        ],
-
-
-        # Dependencies to make releases
-        'dev': ['websauna[dev]'],
+          'test': [
+              'pytest',
+              'pytest-runner',
+              'pytest-splinter',
+              'webtest',
+              'factory_boy',
+              'selenium==2.53.6',
+          ],
+          'dev': ['websauna[dev]'],
       },
 
       # Define where this application starts as referred by WSGI web servers
@@ -60,4 +49,4 @@ setup(name='enkiblog',
       [paste.app_factory]
       main = enkiblog:main
       """,
-      )
+)
