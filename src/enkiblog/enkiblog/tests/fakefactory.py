@@ -1,8 +1,12 @@
+from collections import namedtuple
 import factory
 from pyramid.threadlocal import get_current_registry
 
 from websauna.system.user import models as ws_models
 from websauna.system.user.interfaces import IPasswordHasher
+from websauna.utils.time import now
+from websauna.system.user.utils import get_site_creator
+
 
 from enkiblog.tests.fixtures import db_session_proxy
 
@@ -14,17 +18,47 @@ def hash_password(password):
     return hashed
 
 
-class UserFactory(factory.alchemy.SQLAlchemyModelFactory):
+class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
+
     class Meta:
-        model = ws_models.User
         sqlalchemy_session = db_session_proxy
         force_flush = True
+        abstract = True
+
+    @classmethod
+    def _prepare(cls, create, **kwargs):
+        excluded = {k: w for k, w in kwargs.items() if k in cls._meta.exclude}
+        obj = super()._prepare(create, **kwargs)
+        obj._fb_excluded = namedtuple('excluded', excluded)(**excluded)
+        return obj
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        user = super()._create(model_class, *args, **kwargs)
+        assert user.can_login()
+        return user
+
+
+class UserFactory(BaseFactory):
+    class Meta:
+        model = ws_models.User
         exclude = ('password',)
 
     class Params:
-        password = 'qwerty'
+        password = factory.Faker('slug')
 
     username = factory.Faker('user_name')
     email = factory.Faker('email')
     # role = 'no roles yet'
     hashed_password = factory.LazyAttribute(lambda obj: hash_password(obj.password))
+    activated_at = factory.LazyAttribute(lambda obj: now())
+
+
+class AdminFactory(UserFactory):
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        user = super()._create(model_class, *args, **kwargs)
+        site_creator = get_site_creator(get_current_registry())
+        site_creator.init_empty_site(db_session_proxy, user)
+        return user

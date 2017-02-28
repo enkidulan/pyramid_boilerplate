@@ -3,7 +3,7 @@ from . import fakefactory
 from websauna.system.user import models
 
 
-def test_provision_card(web_server):
+def test_provision_card(web_server, dbsession):
 
     response = requests.get(web_server + "/api/provision")
     assert response.status_code == 404, "Got: {}".format(response.text)
