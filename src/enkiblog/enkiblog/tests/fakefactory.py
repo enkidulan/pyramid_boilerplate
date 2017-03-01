@@ -5,7 +5,8 @@ from pyramid.threadlocal import get_current_registry
 from websauna.system.user import models as ws_models
 from websauna.system.user.interfaces import IPasswordHasher
 from websauna.utils.time import now
-from websauna.system.user.utils import get_site_creator
+
+from enkiblog import models
 
 
 class DBSessionProxy:
@@ -26,6 +27,14 @@ def hash_password(password):
     return hashed
 
 
+def ensure_admin_group_returned():
+    admin_group = db_session_proxy.query(ws_models.Group).filter_by(
+        name=ws_models.Group.DEFAULT_ADMIN_GROUP_NAME).first()
+    if admin_group is None:
+        admin_group = GroupFactory(name=ws_models.Group.DEFAULT_ADMIN_GROUP_NAME)
+    return admin_group
+
+
 class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
 
     class Meta:
@@ -40,11 +49,12 @@ class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
         obj._fb_excluded = namedtuple('excluded', excluded)(**excluded)
         return obj
 
-    @classmethod
-    def _create(cls, model_class, *args, **kwargs):
-        user = super()._create(model_class, *args, **kwargs)
-        assert user.can_login()
-        return user
+
+class GroupFactory(BaseFactory):
+    class Meta:
+        model = ws_models.Group
+
+    name = factory.Faker('slug')
 
 
 class UserFactory(BaseFactory):
@@ -61,12 +71,23 @@ class UserFactory(BaseFactory):
     hashed_password = factory.LazyAttribute(lambda obj: hash_password(obj.password))
     activated_at = factory.LazyAttribute(lambda obj: now())
 
-
-class AdminFactory(UserFactory):
-
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         user = super()._create(model_class, *args, **kwargs)
-        site_creator = get_site_creator(get_current_registry())
-        site_creator.init_empty_site(db_session_proxy, user)
+        assert user.can_login()
         return user
+
+
+class AdminFactory(UserFactory):
+
+    groups = factory.LazyAttribute(lambda obj: [ensure_admin_group_returned()])
+
+
+class PostFactory(BaseFactory):
+    class Meta:
+        model = models.Post
+
+    title = factory.Faker('catch_phrase')
+    description = factory.Faker('text')
+    body = factory.Faker('paragraphs')
+    slug = factory.Faker('slug')
