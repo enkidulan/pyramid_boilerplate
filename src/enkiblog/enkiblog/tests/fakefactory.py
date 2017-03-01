@@ -8,10 +8,18 @@ from websauna.utils.time import now
 from websauna.system.user.utils import get_site_creator
 
 
-from enkiblog.tests.fixtures import db_session_proxy
+class DBSessionProxy:
+    session = None
+
+    def __getattr__(self, attr):
+        return getattr(self.session, attr)
+
+
+db_session_proxy = DBSessionProxy()
 
 
 def hash_password(password):
+    # ???: should I pass "registry" trougth proxy as well?
     registry = get_current_registry()
     hasher = registry.getUtility(IPasswordHasher)
     hashed = hasher.hash_password(password)
