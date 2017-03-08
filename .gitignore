@@ -42,7 +42,6 @@ nosetests.xml
 # buildout
 buildout.cfg
 
-conf/
 tests_logs/
 src/*
 !src/enkiblog
