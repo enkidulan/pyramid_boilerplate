@@ -24,6 +24,8 @@ class Post(Base):
     body = Column(Text(), nullable=False, default="")
     slug = Column(String(256), nullable=False, unique=True)
 
+    state = Column(Text(), nullable=False, default="draft")
+
     author = Column(String(256), nullable=True)
 
     @property

@@ -28,7 +28,8 @@ class SiteRoot(SiteNode):
         self.url = url
 
     def is_current_context(self, navigator, timeout=None):
-        return navigator.browser.url.strip('/') == self.url.strip('/')
+        return navigator.browser.url.startswith(self.url)
+        # return navigator.browser.url.strip('/') == self.url.strip('/')
 
     def navigate(self, navigator):
         navigator.browser.visit(self.url)

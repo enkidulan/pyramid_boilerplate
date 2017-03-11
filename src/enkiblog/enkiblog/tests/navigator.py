@@ -46,8 +46,8 @@ class Navigatable:
         raise
 
     def _navigate(self, navigator, check_if_navigated=True):
-        if self.is_current_context(navigator, timeout=0.1):
-            return
+        # if self.is_current_context(navigator, timeout=0.1):
+        #     return
         if self.parent:
             navigator.navigate(self.parent, check_if_navigated=check_if_navigated)
         self.navigate(navigator)

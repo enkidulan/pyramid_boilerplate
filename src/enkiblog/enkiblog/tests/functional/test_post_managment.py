@@ -57,6 +57,8 @@ def test_list_posts(browser, site, navigator, admin_user, fakefactory, dbsession
     with transaction.manager:
         fakefactory.PostFactory.create_batch(size=30)
 
+    import pdb; pdb.set_trace()
+
     navigator = navigator(user=admin_user)
     navigator.navigate(site.admin_menu.posts)
     assert browser.is_text_present("Total 30 items")

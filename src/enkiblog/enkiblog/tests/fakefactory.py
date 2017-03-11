@@ -83,7 +83,7 @@ class AdminFactory(UserFactory):
     groups = factory.LazyAttribute(lambda obj: [ensure_admin_group_returned()])
 
 
-class PostFactory(BaseFactory):
+class BasePostFactory(BaseFactory):
     class Meta:
         model = models.Post
 
@@ -91,3 +91,8 @@ class PostFactory(BaseFactory):
     description = factory.Faker('text')
     body = factory.Faker('paragraphs')
     slug = factory.Faker('slug')
+
+
+class PostFactory(BasePostFactory):
+    state = 'published'
+    published_at = factory.LazyAttribute(lambda obj: now())
