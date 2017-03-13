@@ -11,7 +11,7 @@ class SiteNode(Navigatable):
 
     def __init__(self):
         self.nodes = {}
-        self.name = convert(self.__class__.__name__)
+        self.name = convert(self.__class__.__name__)  # TODO: rename
 
     def add(self, node):
         assert node.name not in self.nodes  # for having explicit ovverinding
@@ -21,7 +21,6 @@ class SiteNode(Navigatable):
 
 
 class SiteRoot(SiteNode):
-    type = 'page'
 
     def __init__(self, url):
         super().__init__()
@@ -36,7 +35,6 @@ class SiteRoot(SiteNode):
 
 
 class AdminMenu(SiteNode):
-    type = 'page'
 
     def is_current_context(self, navigator, timeout=None):
         return navigator.browser.is_element_present_by_css("#admin-main", wait_time=timeout)
@@ -46,7 +44,6 @@ class AdminMenu(SiteNode):
 
 
 class Posts(SiteNode):  # duplicates AdminMenu for simlicity sake
-    type = 'entery'
 
     def is_current_context(self, navigator, timeout=None):
         return navigator.browser.is_text_present("All posts", wait_time=timeout)
@@ -55,8 +52,18 @@ class Posts(SiteNode):  # duplicates AdminMenu for simlicity sake
         navigator.browser.find_by_css('#btn-panel-list-posts').click()
 
 
+class Post:
+    name = 'post'
+
+    title = None
+    slug = None
+
+    def __init__(self, browser):
+        self.title = browser.find_by_css('#post-title').text
+        self.slug = browser.url.rsplit('/', 1)[1]
+
+
 class AddPostPage(SiteNode):
-    type = 'page'
 
     def is_current_context(self, navigator, timeout=None):
         return navigator.browser.is_text_present("Add new post", wait_time=timeout)
@@ -66,7 +73,6 @@ class AddPostPage(SiteNode):
 
 
 class AddPostForm(SiteNode):
-    type = 'form'
 
     def is_current_context(self, navigator, timeout=None):
         return navigator.browser.is_text_present("Add new post", wait_time=timeout)
@@ -95,7 +101,6 @@ class AddPostForm(SiteNode):
 
 
 class LoginForm(SiteNode):
-    type = 'form'
 
     def is_current_context(self, navigator, timeout=None):
         return navigator.browser.is_element_present_by_css("#login-form", wait_time=timeout)
@@ -120,6 +125,7 @@ def site_constructor(url):
     site = SiteRoot(url)
     site.add(AdminMenu())
     site.add(LoginForm())
+    site.add(Post)
     site.admin_menu.add(Posts())
     site.admin_menu.posts.add(AddPostPage())
     site.admin_menu.posts.add_post_page.add(AddPostForm())

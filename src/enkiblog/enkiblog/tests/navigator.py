@@ -34,6 +34,9 @@ class Navigator:
 
         return form
 
+    def parse(self, node):
+        return node(self.browser)
+
 
 class Navigatable:
 

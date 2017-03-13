@@ -11,7 +11,7 @@
         </p>
     </div>
 
-    Post: {{ post.title }}
+    Post: <span id="post-title">{{post.title}}</span>
 
     {% if request.user %}
         <p id="demo-text">
@@ -22,5 +22,18 @@
             Welcome visitor!
         </p>
     {% endif %}
+
+    <a id="post-prev"
+       class="btn btn-default {{ 'disabled' if not prev_link }}"
+       href="{{prev_link}}"
+       role="button">
+       Prev Post
+    </a>
+    <a id="post-next"
+       class="btn btn-default {{ 'disabled' if not next_link }}"
+       href="{{next_link}}"
+       role="button">
+       Next Post
+    </a>
 
 {% endblock %}

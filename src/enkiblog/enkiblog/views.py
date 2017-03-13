@@ -1,11 +1,10 @@
-from pyramid.httpexceptions import HTTPFound, HTTPNotFound
-from sqlalchemy import func
-
-from enkiblog import models
+from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config
-
+from sqlalchemy import func
 from sqlalchemy.orm.exc import NoResultFound
 from websauna.system.core.views.notfound import notfound
+
+from enkiblog import models
 
 
 @view_config(context=NoResultFound)
@@ -47,6 +46,6 @@ class VistorsResources:
         return {
             "project": "enkiblog",
             'post': post,
-            'slug_prev': slug_prev,
-            'slug_next': slug_next,
+            'prev_link': slug_prev and self.request.route_url("posts", slug=slug_prev),
+            'next_link': slug_next and self.request.route_url("posts", slug=slug_next),
         }

@@ -42,25 +42,23 @@ def test_user_can_navigate_by_paginator_between_posts(
 
     navigator().navigate(site)
 
-    # import pdb; pdb.set_trace()
+    assert browser.find_by_css('#post-prev').has_class('disabled')
+    assert not browser.find_by_css('#post-next').has_class('disabled')
 
-    # assert browser.find_by_css('.btn-pagination-prev').is_disabled()
-    # assert not browser.find_by_css('.btn-pagination-next').is_disabled()
+    for post in posts[::-1]:
+        post_page = navigator().parse(site.post)
+        assert post_page.title == post.title
+        assert post_page.slug == post.slug
+        browser.find_by_css('#post-next').click()
 
-    # for post in posts[::-1]:
-    #     post_page = navigator().parse(site.posts.post)
-    #     assert post_page.title == post.title
-    #     assert post_page.slug == post.slug
-    #     browser.find_by_css('.btn-pagination-next').click()
+    assert not browser.find_by_css('#post-prev').has_class('disabled')
+    assert browser.find_by_css('#post-next').has_class('disabled')
 
-    # assert not browser.find_by_css('.btn-pagination-prev').is_disabled()
-    # assert browser.find_by_css('.btn-pagination-next').is_disabled()
+    for post in posts:
+        post_page = navigator().parse(site.post)
+        assert post_page.title == post.title
+        assert post_page.slug == post.slug
+        browser.find_by_css('#post-prev').click()
 
-    # for post in posts:
-    #     post_page = navigator().parse(site.posts.post)
-    #     assert post_page.title == post.title
-    #     assert post_page.slug == post.slug
-    #     browser.find_by_css('.btn-pagination-prev').click()
-
-    # assert browser.find_by_css('.btn-pagination-prev').is_disabled()
-    # assert not browser.find_by_css('.btn-pagination-next').is_disabled()
+    assert browser.find_by_css('#post-prev').has_class('disabled')
+    assert not browser.find_by_css('#post-next').has_class('disabled')
