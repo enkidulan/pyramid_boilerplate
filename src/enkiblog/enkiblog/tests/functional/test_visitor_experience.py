@@ -38,6 +38,8 @@ def test_user_can_navigate_by_paginator_between_posts(
 
     with transaction.manager:
         posts = fakefactory.PostFactory.create_batch(3)
+        for post in posts:  # creating noise
+            fakefactory.PostFactory(published_at=post.published_at, state='draft')
         dbsession.expunge_all()
 
     navigator().navigate(site)

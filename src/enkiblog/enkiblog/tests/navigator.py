@@ -23,7 +23,7 @@ class Navigator:
 
     def submit(self, form, data, status='success'):
         # TODO: move out?
-        assert form.type == 'form'
+        # assert form.type == 'form'
         assert isinstance(data, dict)
 
         form.submit(navigator=self, data=data)

@@ -7,6 +7,7 @@ from websauna.system.user.interfaces import IPasswordHasher
 from websauna.utils.time import now
 
 from enkiblog import models
+from enkiblog.utils import slugify
 
 
 class DBSessionProxy:
@@ -90,7 +91,8 @@ class BasePostFactory(BaseFactory):
     title = factory.Faker('catch_phrase')
     description = factory.Faker('text')
     body = factory.Faker('paragraphs')
-    slug = factory.Faker('slug')
+    slug = factory.LazyAttribute(
+        lambda obj: slugify(obj.title, models.Post.slug, db_session_proxy))
 
 
 class PostFactory(BasePostFactory):
