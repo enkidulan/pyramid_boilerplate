@@ -31,6 +31,8 @@ class Initializer(websauna.system.Initializer):
         Let the config scanner to pick ``@simple_route`` definitions from scanned modules. Alternative you can call ``config.add_route()`` and ``config.add_view()`` here.
         """
         # We override this method, so that we route home to our home screen, not Websauna default one
+        self.config.add_route('home', '/')
+        self.config.add_route('posts', '/posts/{slug}')
         from . import views
         self.config.scan(views)
 
